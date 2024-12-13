@@ -44,29 +44,37 @@
             </svg>
         </section>
         <section id="calculadora" style="display: none;">
-            <h1>Lista de Alimentos:</h1>
-            <input id="search" type="text" placeholder="Pesquise um alimento" />
-            <div class="food-list-container">
-                <div class="food-list">
-                    <!-- Template for food items -->
-                    <template id="food-item-template">
-                        <div class="food-item">
-                            <div class="arrow"></div>
-                            <div class="header">
-                                <h2></h2>
-                            </div>
-                            <img src="" alt="">
-                            <div class="details">
-                                <p></p>
-                                <div class="quantity-controls">
-                                    <button class="minus">-</button>
-                                    <span class="quantity">0</span>
-                                    <button class="plus">+</button>
+            <div class="calculadora-container">
+                <div class="food-list-section">
+                    <h1>Lista de Alimentos:</h1>
+                    <input id="search" type="text" placeholder="Pesquise um alimento" />
+                    <div class="food-list-container">
+                        <div class="food-list">
+                            <!-- Template for food items -->
+                            <template id="food-item-template">
+                                <div class="food-item">
+                                    <div class="arrow"></div>
+                                    <div class="header">
+                                        <h2></h2>
+                                    </div>
+                                    <img src="" alt="">
+                                    <div class="details">
+                                        <p></p>
+                                        <div class="quantity-controls">
+                                            <button class="minus">-</button>
+                                            <span class="quantity"> </span>
+                                            <button class="plus">+</button>
+                                        </div>
+                                        <input class="mass-input" type="number" placeholder="Gramas" />
+                                    </div>
                                 </div>
-                                <input class="mass-input" type="number" placeholder="Gramas" />
-                            </div>
+                            </template>
                         </div>
-                    </template>
+                    </div>
+                </div>
+                <div class="calculadora-section">
+                    <h1>Calculadora:</h1>
+                    <!-- Add your calculator content here -->
                 </div>
             </div>
         </section>
