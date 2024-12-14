@@ -203,13 +203,11 @@ function calcularInsulina() {
     const hcAlmoco = document.getElementById('hc_almoco').value;
     const hcLancheTarde = document.getElementById('hc_lanche_tarde').value;
     const hcJantar = document.getElementById('hc_jantar').value;
+    const hcOutro = document.getElementById('hc_outro').value;
 
     let hcPorUnidade = 0;
 
     switch (refeicao) {
-        case 'correcao':
-            hcPorUnidade = 0; // Correção não usa HC por unidade de insulina
-            break;
         case 'pequeno_almoco':
             hcPorUnidade = hcPequenoAlmoco;
             break;
@@ -219,35 +217,61 @@ function calcularInsulina() {
         case 'almoco':
             hcPorUnidade = hcAlmoco;
             break;
-            case 'lanche_tarde':
-                hcPorUnidade = hcLancheTarde;
-                break;
-            case 'jantar':
-                hcPorUnidade = hcJantar;
-                break;
-            default:
-                hcPorUnidade = 0;
-        }
-    
-        if (glicemia && indice && hcPorUnidade) {
-            const result = (glicemia - 100) / indice + totalHCValue / hcPorUnidade;
-            document.getElementById('result').innerText = result.toFixed(2);
-        } else {
-            document.getElementById('result').innerText = '0';
-        }
+        case 'lanche_tarde':
+            hcPorUnidade = hcLancheTarde;
+            break;
+        case 'jantar':
+            hcPorUnidade = hcJantar;
+            break;
+        case 'outro':
+            hcPorUnidade = hcOutro;
+            break;
+        case 'correcao':
+            hcPorUnidade = 0; // Correção não usa HC por unidade de insulina
+            break;
+        default:
+            hcPorUnidade = 0;
     }
-    
-    // Função para mostrar/ocultar a seção de cálculo de insulina
-    function toggleInsulinaSection() {
-        const doencas = Array.from(document.getElementById('doencas').selectedOptions).map(option => option.value);
-        const insulinaSection = document.getElementById('insulina-section');
-        const diabetesSection = document.getElementById('diabetes-section');
-        if (doencas.includes('diabetes_tipo_1')) {
-            insulinaSection.style.display = 'block';
-            diabetesSection.style.display = 'block';
-        } else {
-            insulinaSection.style.display = 'none';
-            diabetesSection.style.display = 'none';
+
+    // Obtém o valor total de HC da refeição selecionada
+    const totalHCValue = parseFloat(document.getElementById('total-hc').textContent);
+
+    let result = 0;
+
+    if (glicemia && indice) {
+        if (refeicao === 'correcao') {
+            result = (glicemia - 100) / indice;
+        } else if (hcPorUnidade) {
+            result = (glicemia - 100) / indice + totalHCValue / hcPorUnidade;
         }
+        document.getElementById('result').innerText = result.toFixed(2);
+    } else {
+        document.getElementById('result').innerText = '0';
     }
-    
+}
+
+
+// Função para mostrar/ocultar a seção de cálculo de insulina
+function toggleInsulinaSection() {
+    const doencas = Array.from(document.getElementById('doencas').selectedOptions).map(option => option.value);
+    const insulinaSection = document.getElementById('insulina-section');
+    const diabetesSection = document.getElementById('diabetes-section');
+    if (doencas.includes('diabetes_tipo_1')) {
+        insulinaSection.style.display = 'block';
+        diabetesSection.style.display = 'block';
+    } else {
+        insulinaSection.style.display = 'none';
+        diabetesSection.style.display = 'none';
+    }
+}
+
+// Função para mostrar/ocultar o campo de input para "Outro"
+function toggleOutroInput() {
+    const refeicao = document.getElementById('input-refeicao').value;
+    const hcOutroInput = document.getElementById('hc_outro');
+    if (refeicao === 'outro') {
+        hcOutroInput.style.display = 'block';
+    } else {
+        hcOutroInput.style.display = 'none';
+    }
+}

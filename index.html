@@ -95,7 +95,7 @@
                         <div class="input-container">
                             <input id="input-glicemia" type="number" placeholder="Glicemia" />
                             <input id="input-indice" type="number" placeholder="Índice de resistência à Insulina" />
-                            <select id="input-refeicao">
+                            <select id="input-refeicao" onchange="toggleOutroInput()">
                                 <option value="correcao">Correção</option>
                                 <option value="pequeno_almoco">Pequeno Almoço</option>
                                 <option value="lanche_manha">Lanche da Manhã</option>
@@ -104,6 +104,7 @@
                                 <option value="jantar">Jantar</option>
                                 <option value="outro">Outro</option>
                             </select>
+                            <input id="hc_outro" type="number" placeholder="HC por Unidade de Insulina" style="display: none;" />                            
                             <button onclick="calcularInsulina()">Calcular</button>
                         </div>
                         <div class="result-container">
