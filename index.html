@@ -1,13 +1,16 @@
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Cool Design</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="script.js" defer></script>
-</head>
+</head>    
+
 <body>
     <nav>
         <div>
@@ -41,7 +44,7 @@
             <svg width="200" height="200" style="cursor: pointer; margin: 2rem auto; display: block;" onclick="document.querySelector('[href=\'#calculadora\']').click();">
                 <!-- Placeholder for a plate vector -->
                 <circle cx="100" cy="100" r="90" stroke="black" stroke-width="2" fill="none" />
-                <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Prato</text>
+                <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Plate</text>
             </svg>
         </section>
         <section id="calculadora" style="display: none;">
@@ -63,7 +66,7 @@
                                         <p></p>
                                         <div class="quantity-controls">
                                             <button class="minus">-</button>
-                                            <span class="quantity"> </span>
+                                            <span class="quantity">0</span>
                                             <button class="plus">+</button>
                                         </div>
                                         <input class="mass-input" type="number" placeholder="Gramas" />
@@ -74,16 +77,105 @@
                     </div>
                 </div>
                 <div class="calculadora-section">
-                    <h1>Calculadora:</h1>
-                    <!-- Add your calculator content here -->
+                    <h1>Valor nutricional da refeição:</h1>
+                    <div class="selected-foods">
+                        <h2>Alimentos Selecionados:</h2>
+                        <ul id="selected-foods-list"></ul>
+                    </div>
+                    <div class="totals">
+                        <h2>Total:</h2>
+                        <p>HC: <span id="total-hc">0g</span></p>
+                        <p>Calorias: <span id="total-calories">0kcal"></span></p>
+                        <p>Lipidos: <span id="total-lipids">0g"></span></p>
+                        <p>Proteinas: <span id="total-proteins">0g"></span></p>
+                    </div>
+                    <!-- Nova seção de cálculo de insulina -->
+                    <div class="nova-secao-container" id="insulina-section" style="display: none;">
+                        <h1>Cálculo de Insulina Rápida a injetar:</h1>
+                        <div class="input-container">
+                            <input id="input-glicemia" type="number" placeholder="Glicemia" />
+                            <input id="input-indice" type="number" placeholder="Índice de resistência à Insulina" />
+                            <select id="input-refeicao">
+                                <option value="pequeno_almoco">Pequeno Almoço</option>
+                                <option value="lanche_manha">Lanche da Manhã</option>
+                                <option value="almoco">Almoço</option>
+                                <option value="lanche_tarde">Lanche da Tarde</option>
+                                <option value="jantar">Jantar</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                            <button onclick="calcularInsulina()">Calcular</button>
+                        </div>
+                        <div class="result-container">
+                            <h2>Resultado:</h2>
+                            <p id="result">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="preferencias" style="display: none;">
+            <h1>Definições</h1>
+            <div class="settings-container">
+                <label for="name">Nome:</label>
+                <input id="name" type="text" placeholder="Digite seu nome" />
+                <label for="email">Email:</label>
+                <input id="email" type="email" placeholder="Digite seu email" />
+                <label for="doencas">Doenças:</label>
+                <select id="doencas" multiple onchange="toggleInsulinaSection()">
+                    <option value="nenhuma">Nenhuma</option>
+                    <option value="diabetes_tipo_1">Diabetes Tipo I</option>
+                    <option value="diabetes_tipo_2">Diabetes Tipo II</option>
+                    <option value="hipertensao">Hipertensão</option>
+                    <option value="outra">Outra</option>
+                </select>
+                <label for="alergenios">Alérgenos:</label>
+                <select id="alergenios" multiple>
+                    <option value="aipo">Aipo</option>
+                    <option value="amendoins">Amendoins</option>
+                    <option value="dioxido_de_enxofre_e_sulfitos">Dioxido de Enxofre e Sulfitos</option>
+                    <option value="frutos_de_casca_rija">Frutos de casca rija</option>
+                    <option value="gluten">Glúten</option>
+                    <option value="graos_de_sesamo">Grãos de sesamo</option>
+                    <option value="lacticinios">Lacticinios</option>
+                    <option value="marisco">Marisco</option>
+                    <option value="mostarda">Mostarda</option>
+                    <option value="ovos">Ovos</option>
+                    <option value="peixe">Peixe</option>
+                    <option value="soja">Soja</option>
+                </select>
+                <!-- Seção de Diabetes -->
+                <div id="diabetes-section" style="display: none;">
+                    <h2>Diabetes</h2>
+                    <div class="hc-insulina-container">
+                        <h3>HC por Unidade de Insulina:</h3>
+                        <label for="hc_pequeno_almoco">Pequeno Almoço:</label>
+                        <input id="hc_pequeno_almoco" type="number" placeholder="HC por Unidade de Insulina" />
+                        <label for="hc_lanche_manha">Lanche da Manhã:</label>
+                        <input id="hc_lanche_manha" type="number" placeholder="HC por Unidade de Insulina" />
+                        <label for="hc_almoco">Almoço:</label>
+                        <input id="hc_almoco" type="number" placeholder="HC por Unidade de Insulina" />
+                        <label for="hc_lanche_tarde">Lanche da Tarde:</label>
+                        <input id="hc_lanche_tarde" type="number" placeholder="HC por Unidade de Insulina" />
+                        <label for="hc_jantar">Jantar:</label>
+                        <input id="hc_jantar" type="number" placeholder="HC por Unidade de Insulina" />
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="estatisticas" style="display: none;">
-            <h1>Estatísticas:</h1>
-            <canvas class="grafico" id="donutChart"></canvas>
-         </section>
+        <section id="diabetes-settings" style="display: none;">
+            <h2>Configurações de Diabetes</h2>
+            <form id="diabetes-form">
+                <label for="diabetes-refeicao">Selecione a Refeição:</label>
+                <select id="diabetes-refeicao">
+                    <!-- Populado pelo JavaScript -->
+                </select>
+                <label for="diabetes-quantidade">Quantidade (g):</label>
+                <input type="number" id="diabetes-quantidade" placeholder="Insira a quantidade">
+                <button type="button" id="diabetes-save">Salvar</button>
+            </form>
+        </section>        
+       
     </main>
 </body>
 </html>

@@ -4,6 +4,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchBox = document.querySelector("#search");
     const foodList = document.querySelector(".food-list");
     const foodItemTemplate = document.querySelector("#food-item-template");
+    const selectedFoodsList = document.querySelector("#selected-foods-list");
+    const totalHC = document.querySelector("#total-hc");
+    const totalCalories = document.querySelector("#total-calories");
+    const totalLipids = document.querySelector("#total-lipids");
+    const totalProteins = document.querySelector("#total-proteins");
+
+    // Inicializa o Select2 nos elementos select
+    $('#doencas').select2({
+        placeholder: "Selecione as doenças",
+        allowClear: true
+    });
+
+    $('#alergenios').select2({
+        placeholder: "Selecione os alérgenos",
+        allowClear: true,
+        templateResult: formatState,
+        templateSelection: formatState
+    });
+
+    $('#input-refeicao').select2({
+        placeholder: "Selecione a refeição",
+        minimumResultsForSearch: Infinity // Remove a barra de pesquisa
+    });
+
+    function formatState(state) {
+        if (!state.id) {
+            return state.text;
+        }
+        const baseUrl = "path/to/your/images"; // Substitua pelo caminho correto das suas imagens
+        const $state = $(
+            `<span><img src="${baseUrl}/AL_${state.element.value}.png" class="img-flag" /> ${state.text}</span>`
+        );
+        return $state;
+    }
 
     // Dados dos alimentos
     const foodData = [
@@ -14,6 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
         { name: "Frango assado", imgSrc: "frangoassado.png", details: "HC: 17g | kcal: 77 Prot: 2g | Lip: 0.1g" }
         // Adicione mais itens de alimentos aqui
     ];
+
+    let selectedFoods = {};
 
     // Função para adicionar um item de alimento
     function addFoodItem(food) {
@@ -41,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!isMinusButton && !isPlusButton && !isMassInput) {
                     count++;
                     countDisplay.textContent = count;
+                    updateSelectedFoods(food.name, count);
                 }
             }
         });
@@ -48,8 +85,12 @@ document.addEventListener("DOMContentLoaded", () => {
         // Adiciona evento de clique com o botão direito para alternar a classe ativa
         foodItem.querySelector(".food-item").addEventListener("contextmenu", (e) => {
             e.preventDefault();
-            foodItem.querySelector(".food-item").classList.toggle("active");
+            const foodItemElement = e.currentTarget;
+            foodItemElement.classList.toggle("active");
+            const detailsElement = foodItemElement.querySelector(".details");
+            detailsElement.style.display = foodItemElement.classList.contains("active") ? "block" : "none";
         });
+        
 
         const minusBtn = foodItem.querySelector(".minus");
         const plusBtn = foodItem.querySelector(".plus");
@@ -60,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (count > 0) {
                 count--;
                 countDisplay.textContent = count;
+                updateSelectedFoods(food.name, count);
             }
         });
 
@@ -68,9 +110,53 @@ document.addEventListener("DOMContentLoaded", () => {
             e.stopPropagation();
             count++;
             countDisplay.textContent = count;
+            updateSelectedFoods(food.name, count);
         });
 
         foodList.appendChild(foodItem);
+    }
+
+    // Função para atualizar os alimentos selecionados
+    function updateSelectedFoods(name, count) {
+        if (count > 0) {
+            selectedFoods[name] = count;
+        } else {
+            delete selectedFoods[name];
+        }
+        renderSelectedFoods();
+        calculateTotals();
+    }
+
+    // Função para renderizar os alimentos selecionados
+    function renderSelectedFoods() {
+        selectedFoodsList.innerHTML = "";
+        for (const [name, count] of Object.entries(selectedFoods)) {
+            const li = document.createElement("li");
+            li.textContent = `${name} ${count}x`;
+            selectedFoodsList.appendChild(li);
+        }
+    }
+
+    // Função para calcular os totais
+    function calculateTotals() {
+        let totalHCValue = 0;
+        let totalCaloriesValue = 0;
+        let totalLipidsValue = 0;
+        let totalProteinsValue = 0;
+
+        for (const [name, count] of Object.entries(selectedFoods)) {
+            const food = foodData.find(f => f.name === name);
+            const details = food.details.match(/(\d+\.?\d*)/g);
+            totalHCValue += parseFloat(details[0]) * count;
+            totalCaloriesValue += parseFloat(details[1]) * count;
+            totalLipidsValue += parseFloat(details[2]) * count;
+            totalProteinsValue += parseFloat(details[3]) * count;
+        }
+
+        totalHC.textContent = `${totalHCValue}g`;
+        totalCalories.textContent = `${totalCaloriesValue}kcal`;
+        totalLipids.textContent = `${totalLipidsValue}g`;
+        totalProteins.textContent = `${totalProteinsValue}g`;
     }
 
     // Adiciona todos os itens de alimentos
@@ -105,135 +191,66 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
-
-    // Adiciona contadores de quantidade para os itens de alimentos
-    // Seleciona todos os itens de alimentos
-    document.querySelectorAll(".food-item").forEach(item => {
-        // Cria e adiciona o contador de quantidade
-        const countDisplay = document.createElement("div");
-        countDisplay.className = "count";
-        countDisplay.textContent = "0";
-        item.appendChild(countDisplay);
-
-        let count = 0;
-
-        // Adiciona evento de clique para aumentar a quantidade
-        item.addEventListener("click", (e) => {
-            if (e.button === 0) {
-                const isMinusButton = e.target.classList.contains("minus");
-                const isPlusButton = e.target.classList.contains("plus");
-                const isMassInput = e.target.classList.contains("mass-input");
-
-                // Verifica se o clique não foi nos botões de mais/menos ou na entrada de massa
-                if (!isMinusButton && !isPlusButton && !isMassInput) {
-                    count++;
-                    countDisplay.textContent = count;
-                }
-            }
-        });
-
-        // Adiciona evento de clique com o botão direito para alternar a classe ativa
-        item.addEventListener("contextmenu", (e) => {
-            e.preventDefault();
-            item.classList.toggle("active");
-        });
-
-        const minusBtn = item.querySelector(".minus");
-        const plusBtn = item.querySelector(".plus");
-
-        // Adiciona evento de clique para diminuir a quantidade
-        minusBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (count > 0) {
-                count--;
-                countDisplay.textContent = count;
-            }
-        });
-
-        // Adiciona evento de clique para aumentar a quantidade
-        plusBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            count++;
-            countDisplay.textContent = count;
-        });
-    });
 });
 
-
-//script do grafico donut
-var ctx = document.getElementById('donutChart').getContext('2d');
-var donutChart = new Chart(ctx, {
-    type: 'doughnut', // Tipo de gráfico donut
-    data: {
-        labels: ['Proteínas', 'Hidratos de Carbono', 'Lípidos', 'Calorias'], // Rótulos das seções
-        datasets: [{
-            label: 'Distribuição de Cores',
-            data: [25, 10, 15, 50], // Dados de cada seção
-            backgroundColor: ['#FF5733', '#3498DB', '#2ECC71', '#eeca06'], // Cores das seções
-            borderWidth: 0, // Sem borda
-        }]
-    },
-    options: {
-        responsive: true, // Tornar o gráfico responsivo
-        plugins: {
-            legend: {
-                position: 'top', // Posição da legenda
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(tooltipItem) {
-                        return tooltipItem.label + ': ' + tooltipItem.raw + '%'; // Personalizar o texto do tooltip
-                    }
-                }
-            }
-        },
-        cutout: '70%', // Tamanho do "buraco" central
+// Calculo da Insulina:
+function calcularInsulina() {
+    const glicemia = document.getElementById('input-glicemia').value;
+    const indice = document.getElementById('input-indice').value;
+    if (glicemia && indice) {
+        const result = (glicemia - 100) / indice;
+        document.getElementById('result').innerText = result.toFixed(2);
+    } else {
+        document.getElementById('result').innerText = '0';
     }
-});
+}
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Check if the canvas element exists
-    const ctx = document.getElementById('donutChart').getContext('2d');
-    if (ctx) {
-        // Create the chart
-        const myChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Estatísticas'
-                    }
-                }
-            }
-        });
+// Função para mostrar/ocultar a seção de cálculo de insulina
+function toggleInsulinaSection() {
+    const doencas = Array.from(document.getElementById('doencas').selectedOptions).map(option => option.value);
+    const insulinaSection = document.getElementById('insulina-section');
+    if (doencas.includes('diabetes_tipo_1')) {
+        insulinaSection.style.display = 'block';
+    } else {
+        insulinaSection.style.display = 'none';
     }
+}
+
+function toggleDiabetesSection() {
+    const doencas = Array.from(document.getElementById('doencas').selectedOptions).map(option => option.value);
+    const diabetesSettings = document.getElementById("diabetes-settings");
+
+    if (doencas.includes('diabetes_tipo_1') || doencas.includes('diabetes_tipo_2')) {
+        diabetesSettings.style.display = "block";
+
+        // Popula o select de refeições se ainda não foi preenchido
+        const refeicaoSelect = document.getElementById("diabetes-refeicao");
+        if (refeicaoSelect.options.length === 0) {
+            foodData.forEach(food => {
+                const option = document.createElement("option");
+                option.value = food.name;
+                option.textContent = food.name;
+                refeicaoSelect.appendChild(option);
+            });
+        }
+    } else {
+        diabetesSettings.style.display = "none";
+    }
+}
+
+// Adiciona evento de mudança no select de doenças
+document.getElementById('doencas').addEventListener("change", toggleDiabetesSection);
+
+// Evento para salvar a configuração de diabetes
+document.getElementById("diabetes-save").addEventListener("click", () => {
+    const selectedRefeicao = document.getElementById("diabetes-refeicao").value;
+    const quantidade = document.getElementById("diabetes-quantidade").value;
+
+    if (!selectedRefeicao || !quantidade) {
+        alert("Por favor, selecione uma refeição e insira uma quantidade válida.");
+        return;
+    }
+
+    console.log(`Refeição: ${selectedRefeicao}, Quantidade: ${quantidade}`);
+    alert(`Configurações salvas para Diabetes: ${selectedRefeicao} - ${quantidade}g`);
 });
