@@ -96,6 +96,7 @@
                             <input id="input-glicemia" type="number" placeholder="Glicemia" />
                             <input id="input-indice" type="number" placeholder="Índice de resistência à Insulina" />
                             <select id="input-refeicao">
+                                <option value="correcao">Correção</option>
                                 <option value="pequeno_almoco">Pequeno Almoço</option>
                                 <option value="lanche_manha">Lanche da Manhã</option>
                                 <option value="almoco">Almoço</option>
@@ -162,20 +163,6 @@
                 </div>
             </div>
         </section>
-
-        <section id="diabetes-settings" style="display: none;">
-            <h2>Configurações de Diabetes</h2>
-            <form id="diabetes-form">
-                <label for="diabetes-refeicao">Selecione a Refeição:</label>
-                <select id="diabetes-refeicao">
-                    <!-- Populado pelo JavaScript -->
-                </select>
-                <label for="diabetes-quantidade">Quantidade (g):</label>
-                <input type="number" id="diabetes-quantidade" placeholder="Insira a quantidade">
-                <button type="button" id="diabetes-save">Salvar</button>
-            </form>
-        </section>        
-       
     </main>
 </body>
 </html>

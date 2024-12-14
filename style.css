@@ -360,3 +360,7 @@ h1 {
 #diabetes-form button:hover {
     background-color: #0056b3;
 }
+
+#input-refeicao {
+    width: 200px; /* Define um tamanho fixo para o dropdown */
+}

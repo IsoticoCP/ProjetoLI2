@@ -197,60 +197,57 @@ document.addEventListener("DOMContentLoaded", () => {
 function calcularInsulina() {
     const glicemia = document.getElementById('input-glicemia').value;
     const indice = document.getElementById('input-indice').value;
-    if (glicemia && indice) {
-        const result = (glicemia - 100) / indice;
-        document.getElementById('result').innerText = result.toFixed(2);
-    } else {
-        document.getElementById('result').innerText = '0';
-    }
-}
+    const refeicao = document.getElementById('input-refeicao').value;
+    const hcPequenoAlmoco = document.getElementById('hc_pequeno_almoco').value;
+    const hcLancheManha = document.getElementById('hc_lanche_manha').value;
+    const hcAlmoco = document.getElementById('hc_almoco').value;
+    const hcLancheTarde = document.getElementById('hc_lanche_tarde').value;
+    const hcJantar = document.getElementById('hc_jantar').value;
 
-// Função para mostrar/ocultar a seção de cálculo de insulina
-function toggleInsulinaSection() {
-    const doencas = Array.from(document.getElementById('doencas').selectedOptions).map(option => option.value);
-    const insulinaSection = document.getElementById('insulina-section');
-    if (doencas.includes('diabetes_tipo_1')) {
-        insulinaSection.style.display = 'block';
-    } else {
-        insulinaSection.style.display = 'none';
-    }
-}
+    let hcPorUnidade = 0;
 
-function toggleDiabetesSection() {
-    const doencas = Array.from(document.getElementById('doencas').selectedOptions).map(option => option.value);
-    const diabetesSettings = document.getElementById("diabetes-settings");
-
-    if (doencas.includes('diabetes_tipo_1') || doencas.includes('diabetes_tipo_2')) {
-        diabetesSettings.style.display = "block";
-
-        // Popula o select de refeições se ainda não foi preenchido
-        const refeicaoSelect = document.getElementById("diabetes-refeicao");
-        if (refeicaoSelect.options.length === 0) {
-            foodData.forEach(food => {
-                const option = document.createElement("option");
-                option.value = food.name;
-                option.textContent = food.name;
-                refeicaoSelect.appendChild(option);
-            });
+    switch (refeicao) {
+        case 'correcao':
+            hcPorUnidade = 0; // Correção não usa HC por unidade de insulina
+            break;
+        case 'pequeno_almoco':
+            hcPorUnidade = hcPequenoAlmoco;
+            break;
+        case 'lanche_manha':
+            hcPorUnidade = hcLancheManha;
+            break;
+        case 'almoco':
+            hcPorUnidade = hcAlmoco;
+            break;
+            case 'lanche_tarde':
+                hcPorUnidade = hcLancheTarde;
+                break;
+            case 'jantar':
+                hcPorUnidade = hcJantar;
+                break;
+            default:
+                hcPorUnidade = 0;
         }
-    } else {
-        diabetesSettings.style.display = "none";
+    
+        if (glicemia && indice && hcPorUnidade) {
+            const result = (glicemia - 100) / indice + totalHCValue / hcPorUnidade;
+            document.getElementById('result').innerText = result.toFixed(2);
+        } else {
+            document.getElementById('result').innerText = '0';
+        }
     }
-}
-
-// Adiciona evento de mudança no select de doenças
-document.getElementById('doencas').addEventListener("change", toggleDiabetesSection);
-
-// Evento para salvar a configuração de diabetes
-document.getElementById("diabetes-save").addEventListener("click", () => {
-    const selectedRefeicao = document.getElementById("diabetes-refeicao").value;
-    const quantidade = document.getElementById("diabetes-quantidade").value;
-
-    if (!selectedRefeicao || !quantidade) {
-        alert("Por favor, selecione uma refeição e insira uma quantidade válida.");
-        return;
+    
+    // Função para mostrar/ocultar a seção de cálculo de insulina
+    function toggleInsulinaSection() {
+        const doencas = Array.from(document.getElementById('doencas').selectedOptions).map(option => option.value);
+        const insulinaSection = document.getElementById('insulina-section');
+        const diabetesSection = document.getElementById('diabetes-section');
+        if (doencas.includes('diabetes_tipo_1')) {
+            insulinaSection.style.display = 'block';
+            diabetesSection.style.display = 'block';
+        } else {
+            insulinaSection.style.display = 'none';
+            diabetesSection.style.display = 'none';
+        }
     }
-
-    console.log(`Refeição: ${selectedRefeicao}, Quantidade: ${quantidade}`);
-    alert(`Configurações salvas para Diabetes: ${selectedRefeicao} - ${quantidade}g`);
-});
+    
