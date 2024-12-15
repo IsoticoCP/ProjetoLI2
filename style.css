@@ -200,7 +200,7 @@ h1 {
 /* Contador de quantidade */
 .count {
     position: absolute;
-    top: 5px;
+    bottom: 5px;
     right: 5px;
     background: #4caf50;
     color: white;
@@ -215,6 +215,11 @@ h1 {
     z-index: 15;
 }
 
+.grafico {
+    width: 25px;
+    height: 25px;
+    align-self: center;
+}
 
 .calculadora-container {
     display: grid;
@@ -229,12 +234,153 @@ h1 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.grafico {
-    top: auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    border-radius: 8px;
-    padding: 1rem;
-    align-self: center;
+/* Insulina: */
+.nova-secao-container {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-container input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.input-container button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.result-container {
+    margin-top: 20px;
+}
+
+.result-container h2 {
+    margin-bottom: 10px;
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.settings-container label {
+    font-weight: bold;
+}
+
+.settings-container input, .settings-container select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.settings-container select[multiple] {
+    height: auto;
+}
+
+.hc-insulina-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.hc-insulina-container label {
+    font-weight: bold;
+}
+
+.hc-insulina-container input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#diabetes-settings {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+}
+
+#diabetes-settings h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+#diabetes-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#diabetes-form label {
+    font-size: 1em;
+    color: #333;
+}
+
+#diabetes-form input,
+#diabetes-form select {
+    padding: 5px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#diabetes-form button {
+    padding: 10px;
+    font-size: 1em;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#diabetes-form button:hover {
+    background-color: #0056b3;
+}
+
+#input-refeicao {
+    width: 200px; /* Define um tamanho fixo para o dropdown */
+}
+
+#hc_outro{
+    width: 80px;
+}
+
+
+
+
+.container-grafico{
+
+    width: 100%;
+    max-width: 1000px;
+        margin: 0 auto;
+
+}
+
+canvas {
+    width: 100%;   /* Faz o gráfico ocupar toda a largura do contêiner */
+    height: auto;  /* Ajusta a altura automaticamente para manter a proporção */
 }
